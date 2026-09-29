@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Expressive Hybrid Linear Attention via Chunk-Wise Dynamic Mixing" name="description"/>
+<title>HLA — Expressive Hybrid Linear Attention via Chunk-Wise Dynamic Mixing</title>
+<link href="styles.css?v=20260927-polish" rel="stylesheet"/>
+</head>
+<body class="language">
+
+<header class="paper-header"><h1><span class="paper-name">HLA</span>: Expressive Hybrid Linear Attention <br/>via Chunk-Wise Dynamic Mixing</h1><div class="actions"><a class="button" href="https://github.com/Caesarhhh/HLA_">Code <span aria-hidden="true">↗</span></a><a class="button" href="#method">Method</a><a class="button" href="#results">Results</a></div></header><main class="wrap"><figure class="teaser">
+<img alt="Motivating observations. Long histories call for selective, query-dependent access." height="672" loading="eager" src="assets/motivation.png" width="2100"/>
+<figcaption>Motivating observations. Long histories call for selective, query-dependent access.</figcaption>
+</figure><section class="abstract" id="abstract"><h2>Abstract</h2><p>Linear attention enables efficient long-context autoregressive decoding by compressing history into recurrent states, but this compression can make selective access to sparse and distant information difficult. Existing chunk-based extensions increase memory capacity, yet learned chunk-mixing coefficients may remain fixed with respect to input content and therefore cannot adapt historical access to each query. We introduce Hybrid Linear Attention (HLA), a query-dependent chunk-level attention mechanism for Gated DeltaNet (GDN). HLA represents each completed chunk as an exact affine state transition and computes content-dependent routing gates from compact, self-attentively pooled representatives. Each gate interpolates the corresponding historical transition with the identity map, controlling both the chunk’s additive memory and its transformation of earlier states. Effective-support regularization further encourages concentrated routing for sparse inference.</p><p>We evaluate HLA under both pretrained adaptation and from-scratch training. Across Qwen3.5 models from 0.8B to 9B, HLA consistently improves over native GDN and fixed chunk mixing, with gains of up to 5.57 percentage points on LongBench-V2 and 3.97 points on RULER. In a controlled from-scratch 1.3B setting trained for 100B tokens with a 4K context, HLA also improves RULER performance from 4K to 32K, with gains increasing from 0.83 points at 4K to 4.22 points at 32K. These results demonstrate that query-dependent composition of recurrent memory improves long-context modeling and remains effective beyond the training context while using compact per-chunk affine summaries.</p></section>
+
+<section class="editorial-section" id="method">
+
+<h2>Method</h2><figure class="method-figure"><img alt="HLA architecture: chunk summaries, query-dependent routing, and affine state recomposition" height="721" loading="lazy" src="assets/method.png" width="1800"/><figcaption>Chunk-wise dynamic mixing · HLA architecture</figcaption></figure>
+<div class="equation">Ãᵢ(q) = (1 − gᵢ(q))I + gᵢ(q)Aᵢ   ·   B̃ᵢ(q) = gᵢ(q)Bᵢ</div>
+<p>A zero gate skips a chunk’s transition; a unit gate retains it. Gating both the multiplicative and additive terms lets HLA preserve earlier information when a historical chunk is irrelevant.</p>
+
+<div class="grid">
+<article class="card">
+<h3>Summarize</h3>
+<p>Represent each completed chunk by an affine state transition and pooled routing keys.</p>
+</article>
+<article class="card">
+<h3>Route</h3>
+<p>Compute query-dependent gates from compact pooled keys.</p>
+</article>
+<article class="card">
+<h3>Recompose</h3>
+<p>Interpolate historical transitions with identity and compose them in chronological order.</p>
+</article>
+</div></section>
+<section class="editorial-section" id="results">
+
+<h2>Quantitative Results</h2>
+<p>GDN and HLA use the same 1.3B-scale architecture, 100B-token training budget, and 4K training context. Scores below are RULER macro averages over all 13 tasks, with 500 matched examples per task and context length.</p>
+<div class="scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Context</th>
+<th scope="col">GDN</th>
+<th scope="col">HLA (ours)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4K</td>
+<td>24.63</td>
+<td>25.46</td>
+</tr>
+<tr>
+<td>8K</td>
+<td>15.02</td>
+<td>17.69</td>
+</tr>
+<tr>
+<td>16K</td>
+<td>7.98</td>
+<td>11.05</td>
+</tr>
+<tr>
+<td>32K</td>
+<td>3.65</td>
+<td>7.87</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="source">RULER macro averages.</p>
+
+</section>
+</main>
+<footer class="wrap"><a href="https://caesarhhh.github.io/hla-wm/">Related project: HLA-WM</a></footer>
+</body>
+</html>
